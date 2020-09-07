@@ -28,13 +28,13 @@
 
 ### Примеры использования
 #### Ввод данных
-![Ввод данных](/docs/plotter-data_enter.png | width=100)
+![Ввод данных](/docs/plotter-data_enter.png)                                            
 
 #### Пример первой функции
-![Пример первой функции](/docs/plotter-first_function.png | width=100)
+![Пример первой функции](/docs/plotter-first_function.png)
 
 #### Пример второй функции
-![Пример второй функции](/docs/plotter-second_function.png | width=100)
+![Пример второй функции](/docs/plotter-second_function.png)
 
 #### Пример третьей функции
-![Пример третьей функции](/docs/plotter-third_function.png | width=100)
+![Пример третьей функции](/docs/plotter-third_function.png)
