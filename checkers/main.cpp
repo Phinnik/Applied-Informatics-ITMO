@@ -5,6 +5,7 @@
 #include "game/Game.h"
 #include "game/Graphics.h"
 #include "iostream"
+
 using namespace std;
 
 
@@ -24,26 +25,99 @@ Move getMoveByInput() {
     cout << "type 'from' coordinate:" << endl;
     cin >> input;
     x0 = charToInt[input[0]];
-    y0 = (int)input[1] - 48 - 1; // makes char int
+    y0 = (int) input[1] - 48 - 1; // makes char int
 
     cout << "type 'to' coordinate:" << endl;
     cin >> input;
     x1 = charToInt[input[0]];
-    y1 = (int)input[1] - 48 - 1; // makes char int
+    y1 = (int) input[1] - 48 - 1; // makes char int
 
     Move move{x0, y0, x1, y1};
 
     return move;
 }
 
-Move makeRandomDecision(Board board) {
+Move makeDecision1(Board board) {
+    Move move;
 
-    Move move{1,1,1,1};
+    // tries to move top checkers
+    for (int y = 7; y >= 0; --y) {
+        for (int x = 0; x < 8; ++x) {
+            if (board.getCell(x, y).color == 1) {
+                // try move top right
+                for (int i = 1; x + i < 8 and y + i < 8; ++i) {
+                    move = {x, y, x + i, y + i};
+                    if (board.isMoveValid(1, move)) {
+                        return move;
+                    }
+                }
+                // try move top left
+                for (int i = 1; x - i >= 0 and y + i < 8; ++i) {
+                    move = {x, y, x - i, y + i};
+                    if (board.isMoveValid(1, move)) {
+                        return move;
+                    }
+                }
+                // try move bottom right
+                for (int i = 1; x + i < 8 and y - i >= 0; ++i) {
+                    move = {x, y, x + i, y - i};
+                    if (board.isMoveValid(1, move)) {
+                        return move;
+                    }
+                }
+                // try move bottom left
+                for (int i = 1; x - i >= 0 and y - i >= 0; ++i) {
+                    move = {x, y, x - i, y - i};
+                    if (board.isMoveValid(1, move)) {
+                        return move;
+                    }
+                }
+            }
+        }
+    }
+
     return move;
 }
 
-Move makeSafeDecision(Board board) {
-    Move move{1,1,1,1};
+Move makeDecision2(Board board) {
+    Move move;
+
+    // tries to move bottom checkers
+    for (int y = 8; y > 0; --y) {
+        for (int x = 0; x < 8; ++x) {
+            if (board.getCell(x, y).color == 2) {
+                // try move top right
+                for (int i = 1; x + i < 8 and y + i < 8; ++i) {
+                    move = {x, y, x + i, y + i};
+                    if (board.isMoveValid(2, move)) {
+                        return move;
+                    }
+                }
+                // try move top left
+                for (int i = 1; x - i >= 0 and y + i < 8; ++i) {
+                    move = {x, y, x - i, y + i};
+                    if (board.isMoveValid(2, move)) {
+                        return move;
+                    }
+                }
+                // try move bottom right
+                for (int i = 1; x + i < 8 and y - i >= 0; ++i) {
+                    move = {x, y, x + i, y - i};
+                    if (board.isMoveValid(2, move)) {
+                        return move;
+                    }
+                }
+                // try move bottom left
+                for (int i = 1; x - i >= 0 and y - i >= 0; ++i) {
+                    move = {x, y, x - i, y - i};
+                    if (board.isMoveValid(2, move)) {
+                        return move;
+                    }
+                }
+            }
+        }
+    }
+
     return move;
 }
 
@@ -55,14 +129,9 @@ int main() {
     bool autoPlay;
     cout << "autoPlay: (1/0)" << endl;
     cin >> autoPlay;
-
-//    board.clear();
-//    board.setCell(0, 0, 1, false);
-//    board.setCell(1, 1, 2, false);
-//    board.setCell(3, 3, 2, false);
-
     graphics.display(board);
 
+    Move newMove;
 
     while (board.gameResult() == 3) {
         if (colorTurn == 1) {
@@ -70,13 +139,31 @@ int main() {
         } else {
             cout << "black turn" << endl;
         }
-        Move newMove = getMoveByInput();
+
+        if (autoPlay) {
+            if (colorTurn == 1) {
+                newMove = makeDecision1(board);
+            } else {
+                newMove = makeDecision2(board);
+            }
+        } else {
+            newMove = getMoveByInput();
+        }
+
         if (board.isMoveValid(colorTurn, newMove)) {
             board.makeMove(colorTurn, newMove);
             graphics.display(board);
             while (board.shouldCheckerEat(newMove.x1, newMove.y1)) {
                 cout << "eat more" << endl;
-                newMove = getMoveByInput();
+                if (autoPlay) {
+                    if (colorTurn == 1) {
+                        newMove = makeDecision1(board);
+                    } else {
+                        newMove = makeDecision2(board);
+                    }
+                } else {
+                    newMove = getMoveByInput();
+                }
                 board.makeMove(colorTurn, newMove);
                 graphics.display(board);
             }
@@ -90,7 +177,6 @@ int main() {
     } else {
         cout << "Black won!" << endl;
     }
-
 
 
     return 0;
